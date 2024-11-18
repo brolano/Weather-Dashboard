@@ -1,9 +1,53 @@
 import dotenv from 'dotenv';
+import { runInThisContext } from 'node:vm';
 dotenv.config();
 
 // TODO: Define an interface for the Coordinates object
+interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
 
 // TODO: Define a class for the Weather object
+class Weather {
+  private coordinates: Coordinates;
+  private temperature: number;
+  private condition: string;
+
+  constructor(coordinates: Coordinates, temperature: number, condition: string) {
+    this.coordinates = coordinates;
+    this.temperature = temperature;
+    this. condition = condition;
+  }
+
+  getCoordinates(): Coordinates {
+    return this.coordinates;
+  }
+
+  getTemperature(): number {
+    return this.temperature;
+  }
+
+  getCondition(): string {
+    return this.condition;
+  }
+  setCoordinates(coordinates: Coordinates): void {
+    this.coordinates = coordinates;
+  }
+
+  setTemperature(temperature: number): void {
+    this.temperature = temperature;
+  }
+
+  setCondition(condition: string): void {
+    this.condition = condition;
+  }
+
+  displayWeather(): string {
+    return `Locatino: Latitude ${this.coordinates.latitude}, Longitude ${this.coordinates.longitude}\n` + 
+    `Temperature: ${this.temperature}°\nCondition: ${this.condition}`;
+  }
+}
 
 // TODO: Complete the WeatherService class
 class WeatherService {
