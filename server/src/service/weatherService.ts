@@ -29,7 +29,7 @@ class Weather {
     return this.windSpeed;
   }
 
-  getHumidty(): number {
+  getHumidity(): number {
     return this.humidity;
   }
 
@@ -37,6 +37,21 @@ class Weather {
     return this.condition;
   }
 
+  setTemperature(temperature: number): void {
+    this.temperature = temperature;
+  }
+
+  setWindSpeed(windSpeed: number): void {
+    this.windSpeed = windSpeed;
+  }
+
+  setHumidity(humidity: number): void {
+    this.humidity = humidity;
+  }
+
+  setCondition(condition: string): void {
+    this.condition = condition;
+  }
 }
 
 // TODO: Complete the WeatherService class
