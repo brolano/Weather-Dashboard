@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { runInThisContext } from 'node:vm';
 dotenv.config();
 
 // TODO: Define an interface for the Coordinates object
@@ -10,22 +9,16 @@ interface Coordinates {
 
 // TODO: Define a class for the Weather object
 class Weather {
-  private coordinates: Coordinates;
   private temperature: number;
   private windSpeed: number;
   private humidity: number;
   private condition: string;
 
-  constructor(coordinates: Coordinates, temperature: number, windSpeed: number, humidity: number, condition: string) {
-    this.coordinates = coordinates;
+  constructor(temperature: number, windSpeed: number, humidity: number, condition: string){
     this.temperature = temperature;
     this.windSpeed = windSpeed;
     this.humidity = humidity;
     this.condition = condition;
-  }
-
-  getCoordinates(): Coordinates {
-    return this.coordinates;
   }
 
   getTemperature(): number {
@@ -36,38 +29,14 @@ class Weather {
     return this.windSpeed;
   }
 
-  getHumidity(): number {
+  getHumidty(): number {
     return this.humidity;
   }
 
   getCondition(): string {
     return this.condition;
   }
-  setCoordinates(coordinates: Coordinates): void {
-    this.coordinates = coordinates;
-  }
 
-  setTemperature(temperature: number): void {
-    this.temperature = temperature;
-  }
-
-  setWindSpeed(windSpeed: number): void {
-    this.windSpeed = windSpeed;
-  }
-
-  setHumidity(humidity: number): void {
-    this.humidity = humidity;
-  }
-
-  setCondition(condition: string): void {
-    this.condition = condition;
-  }
-
-  displayWeather(): string {
-    return `Location: Latitude ${this.coordinates.latitude}, Longitude ${this.coordinates.longitude}\n` +
-           `Temperature: ${this.temperature}°\nWind Speed: ${this.windSpeed} m/s\n` +
-           `Humidity: ${this.humidity}%\nCondition: ${this.condition}`;
-  }
 }
 
 // TODO: Complete the WeatherService class
