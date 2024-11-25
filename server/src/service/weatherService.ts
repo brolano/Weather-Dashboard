@@ -78,19 +78,16 @@ class WeatherService {
   }
 
   // TODO: Create fetchLocationData method
-  private async fetchLocationData(query: string): Promise<any> {
-    const response = await fetch(query);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch location data using query: ${query}`);
-    }
-
-    return response.json();
+  private async fetchLocationData(query: string): Promise<Coordinates> {
+    const response = await fetch(`${this.baseURL}/geo/1.0/direct?q=${query}&appid=${this.apiKey}`);
+    const locationData = await response.json();
+    return this.destructureLocationData(locationData[0])
   }
   // TODO: Create destructureLocationData method
-  private destructureLocationData(locationData: Coordinates): Coordinates {
-    const { lat: latitude, lon: longitude } = locationData.coord;
-    return { latitude, longitude };
-  }
+  private destructureLocationData(locationData: any): Coordinates {
+    const { lat, lon } = locationData.coord;
+  return { latitude: lat, longitude: lon };
+}
   // TODO: Create buildGeocodeQuery method
   private buildGeocodeQuery(city:string): string {
     return `${this.baseURL}/weather?q=${encodeURIComponent(city)}&appid=${this.apiKey}`;
@@ -163,4 +160,4 @@ class WeatherService {
   }
 }
 
-export default new WeatherService ());
+export default new WeatherService ();
