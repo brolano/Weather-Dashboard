@@ -9,16 +9,22 @@ interface Coordinates {
 
 // TODO: Define a class for the Weather object
 class Weather {
+  private coordinates: Coordinates;
   private temperature: number;
   private windSpeed: number;
   private humidity: number;
   private condition: string;
 
-  constructor(temperature: number, windSpeed: number, humidity: number, condition: string){
+  constructor(coordinates: Coordinates, temperature: number, windSpeed: number, humidity: number, condition: string){
+    this.coordinates = coordinates;
     this.temperature = temperature;
     this.windSpeed = windSpeed;
     this.humidity = humidity;
     this.condition = condition;
+  }
+
+  getCoordinates(): Coordinates {
+    return this.coordinates;
   }
 
   getTemperature(): number {
@@ -45,15 +51,32 @@ class WeatherService {
   private apiKey: string;
   private cityName: string;
 
-  constructor(cityName: string) {
-    this.baseURL = process.env.BASE_URL || '';
-    this.apiKey = process.env.API_KEY || '';
+  constructor(cityName: string, baseURL?: string, apiKey?: string) {
+    this.baseURL = baseURL || process.env.BASE_URL || '';
+    this.apiKey = apiKey || process.env.API_KEY || '';
     this.cityName = cityName;
+
+    if (!this.baseURL) {
+      throw new Error ('Base URL is not defined in environment variables or constructor')
+    }
 
     if (!this.apiKey) {
       throw new Error ('API key is not defined in environment variables');
     }
   }
+
+  getCityName(): string {
+    return this.cityName;
+  }
+
+  getBaseURL(): string {
+    return this.baseURL;
+  }
+
+  getApiKey(): string {
+    return this.apiKey;
+  }
+
   // TODO: Create fetchLocationData method
   private async fetchLocationData(query: string): Promise<any> {
     const response = await fetch(query);
