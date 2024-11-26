@@ -1,4 +1,13 @@
 // TODO: Define a City class with name and id properties
+export class City {
+  public id: number;
+  public name: string;
+
+  constructor(id: number, name: string) {
+    this.id = id;
+    this.name = name;
+  }
+}
 
 // TODO: Complete the HistoryService class
 class HistoryService {
