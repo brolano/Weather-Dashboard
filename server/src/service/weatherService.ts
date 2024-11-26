@@ -78,16 +78,28 @@ class WeatherService {
   }
 
   // TODO: Create fetchLocationData method
-  private async fetchLocationData(query: string): Promise<Coordinates> {
-    const response = await fetch(`${this.baseURL}/geo/1.0/direct?q=${query}&appid=${this.apiKey}`);
-    const locationData = await response.json();
-    return this.destructureLocationData(locationData[0])
+  private async fetchLocationData(query: string): Promise<any> {
+    const geocodeQuery = this.buildGeocodeQuery(query);
+    const response = await fetch(geocodeQuery);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch location data for query: ${query}`);
+    }
+    
+    return response.json();
   }
   // TODO: Create destructureLocationData method
   private destructureLocationData(locationData: any): Coordinates {
-    const { lat, lon } = locationData.coord;
-  return { latitude: lat, longitude: lon };
-}
+    if (!locationData || !locationData.coord) {
+      throw new Error('Invalid location data structure');
+    }
+    
+    const { coord: { lat, lon } } = locationData;
+    return {
+      latitude: lat,
+      longitude: lon
+    };
+  }
   // TODO: Create buildGeocodeQuery method
   private buildGeocodeQuery(city:string): string {
     return `${this.baseURL}/weather?q=${encodeURIComponent(city)}&appid=${this.apiKey}`;
@@ -99,16 +111,12 @@ class WeatherService {
   }
   // TODO: Create fetchAndDestructureLocationData method
   private async fetchAndDestructureLocationData(city: string): Promise<Coordinates> {
-    const geocodeQuery = this.buildGeocodeQuery(city);
-    const response = await fetch(geocodeQuery);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch location data for city: ${city}`);
+    try {
+      const locationData = await this.fetchLocationData(city);
+      return this.destructureLocationData(locationData);
+    } catch (error) {
+      throw new Error(`Failed to process location data for city: ${city}`);
     }
-
-    const data = await response.json();
-    const { lat: latitude, lon: longitude } = data.coord;
-    return { latitude, longitude };
   }
   // TODO: Create fetchWeatherData method
   private async fetchWeatherData(coordinates: Coordinates): Promise<any> {
@@ -160,4 +168,4 @@ class WeatherService {
   }
 }
 
-export default new WeatherService ();
+export default new WeatherService ('');
