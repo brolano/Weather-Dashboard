@@ -52,7 +52,7 @@ class WeatherService {
   private cityName: string;
 
   constructor(cityName: string, baseURL?: string, apiKey?: string) {
-    this.baseURL = baseURL || process.env.BASE_URL || '';
+    this.baseURL = baseURL || process.env.API_BASE_URL || '';
     this.apiKey = apiKey || process.env.API_KEY || '';
     this.cityName = cityName;
 
