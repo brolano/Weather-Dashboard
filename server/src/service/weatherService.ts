@@ -10,13 +10,15 @@ interface Coordinates {
 // TODO: Define a class for the Weather object
 class Weather {
   private coordinates: Coordinates;
+  private city: string;
   private temperature: number;
   private windSpeed: number;
   private humidity: number;
   private condition: string;
 
-  constructor(coordinates: Coordinates, temperature: number, windSpeed: number, humidity: number, condition: string){
+  constructor(coordinates: Coordinates, city: string, temperature: number, windSpeed: number, humidity: number, condition: string){
     this.coordinates = coordinates;
+    this.city = city;
     this.temperature = temperature;
     this.windSpeed = windSpeed;
     this.humidity = humidity;
@@ -25,6 +27,10 @@ class Weather {
 
   getCoordinates(): Coordinates {
     return this.coordinates;
+  }
+
+  getCity(): string {
+    return this.city;
   }
 
   getTemperature(): number {
@@ -52,7 +58,7 @@ class WeatherService {
   private cityName: string;
 
   constructor(cityName: string, baseURL?: string, apiKey?: string) {
-    this.baseURL = baseURL || process.env.API_BASE_URL || '';
+    this.baseURL = baseURL || process.env.API_BASE_URL || 'https://api.openweathermap.org/data/2.5';
     this.apiKey = apiKey || process.env.API_KEY || '';
     this.cityName = cityName;
 
@@ -139,17 +145,32 @@ class WeatherService {
     return { temperature, windSpeed, humidity, condition };
   }
   // TODO: Complete buildForecastArray method
-  private buildForecastArray(currentWeather: Weather, weatherData: any[]): Weather[] {
-    const forecastArray: Weather[] = [currentWeather];
+  private buildForecastArray(
+    currentWeather: Weather,
+    forecastData: any
+  ): Weather[] {
+    if (!forecastData.list || !Array.isArray(forecastData.list)) {
+      throw new Error('Invalid forecast data structure');
+    }
 
-    weatherData.forEach((data: any) => {
-      const coordinates: Coordinates = currentWeather.getCoordinates();
+    const forecastArray: Weather[] = [currentWeather];
+    const coordinates = currentWeather.getCoordinates();
+    const city = currentWeather.getCity();
+
+    forecastData.list.forEach((data: any) => {
       const temperature = data.main.temp;
       const windSpeed = data.wind.speed;
       const humidity = data.main.humidity;
       const condition = data.weather[0].description;
 
-      const forecastWeather = new Weather(coordinates, temperature, windSpeed, humidity, condition);
+      const forecastWeather = new Weather(
+        coordinates,
+        city,
+        temperature,
+        windSpeed,
+        humidity,
+        condition
+      );
       forecastArray.push(forecastWeather);
     });
 
@@ -159,13 +180,22 @@ class WeatherService {
   public async getWeatherForCity(city: string): Promise<Weather[]> {
     const coordinates = await this.fetchAndDestructureLocationData(city);
     const currentWeatherResponse = await this.fetchWeatherData(coordinates);
-    const { temperature, windSpeed, humidity, condition } = this.parseCurrentWeather(currentWeatherResponse);
-    const currentWeather = new Weather(coordinates, temperature, windSpeed, humidity, condition);
-    const forecastData = await this.fetchWeatherData(coordinates); 
+    const { temperature, windSpeed, humidity, condition } =
+      this.parseCurrentWeather(currentWeatherResponse);
+    const currentWeather = new Weather(
+      coordinates,
+      city,
+      temperature,
+      windSpeed,
+      humidity,
+      condition
+    );
+
+    const forecastData = await this.fetchWeatherData(coordinates);
     const forecastArray = this.buildForecastArray(currentWeather, forecastData);
 
-    return forecastArray; 
+    return forecastArray;
   }
 }
 
-export default new WeatherService ('');
+export default new WeatherService ('DefaultCityName');

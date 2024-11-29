@@ -22,6 +22,7 @@ class City {
       this.name = name;
   }
 
+  
   setId(id: number): void {
       this.id = id;
   }
