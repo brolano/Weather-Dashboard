@@ -11,11 +11,10 @@ const app = express();
 
 const PORT = process.env.PORT || 3001;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 // TODO: Serve static files of entire client dist folder
-app.use(express.static(path.resolve(__dirname, '../client/dist')));
+app.use(express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), 'dist')));
 
 
 // TODO: Implement middleware for parsing JSON and urlencoded form data
