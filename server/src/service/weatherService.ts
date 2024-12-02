@@ -57,14 +57,11 @@ class WeatherService {
   private apiKey: string;
   private cityName: string;
 
-  constructor(cityName: string, baseURL?: string, apiKey?: string) {
+  constructor(cityName: string = 'Unknown City', baseURL?: string, apiKey?: string) {
     this.baseURL = baseURL || process.env.API_BASE_URL || 'https://api.openweathermap.org/data/2.5';
     this.apiKey = apiKey || process.env.API_KEY || '';
     this.cityName = cityName;
 
-    if (!this.baseURL) {
-      throw new Error ('Base URL is not defined in environment variables or constructor')
-    }
 
     if (!this.apiKey) {
       throw new Error ('API key is not defined in environment variables');
@@ -84,36 +81,39 @@ class WeatherService {
   }
 
   // TODO: Create fetchLocationData method
-  private async fetchLocationData(query: string): Promise<any> {
-    const geocodeQuery = this.buildGeocodeQuery(query);
+  private async fetchLocationData(city: string): Promise<any> {
+    const geocodeQuery = this.buildGeocodeQuery(city);
     const response = await fetch(geocodeQuery);
-    
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch location data for query: ${query}`);
+      throw new Error(`Failed to fetch location data for city: ${city}`);
     }
-    
-    return response.json();
+
+    const data = await response.json();
+    console.log("Location Data Response:", data); // Debugging
+    return data;
   }
   // TODO: Create destructureLocationData method
-  private destructureLocationData(locationData: any): Coordinates {
-    if (!locationData || !locationData.coord) {
-      throw new Error('Invalid location data structure');
+  private destructureLocationData(locationData: any[]): Coordinates {
+    if (!locationData || locationData.length === 0) {
+      throw new Error('No location data found for the given city.');
     }
-    
-    const { coord: { lat, lon } } = locationData;
+
+    const { lat, lon } = locationData[0]; // Use the first result
     return {
       latitude: lat,
-      longitude: lon
+      longitude: lon,
     };
   }
   // TODO: Create buildGeocodeQuery method
-  private buildGeocodeQuery(city:string): string {
-    return `${this.baseURL}/weather?q=${encodeURIComponent(city)}&appid=${this.apiKey}`;
+  private buildGeocodeQuery(city: string): string {
+    const limit = 1; // Limit results to the top match
+    return `${this.baseURL}/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=${limit}&appid=${this.apiKey}`;
   }
   // TODO: Create buildWeatherQuery method
   private buildWeatherQuery(coordinates: Coordinates): string {
     const { latitude, longitude } = coordinates;
-    return `${this.baseURL}/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${this.apiKey}`;
+    return `${this.baseURL}/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${this.apiKey}`;
   }
   // TODO: Create fetchAndDestructureLocationData method
   private async fetchAndDestructureLocationData(city: string): Promise<Coordinates> {
@@ -130,13 +130,26 @@ class WeatherService {
     const response = await fetch(weatherQuery);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch weather data for coordinates: ${coordinates.latitude}, ${coordinates.longitude}`);
+      throw new Error(
+        `Failed to fetch weather data for coordinates: ${coordinates.latitude}, ${coordinates.longitude}`
+      );
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log("Weather Data Response:", data); // Debugging
+    return data;
   }
   // TODO: Build parseCurrentWeather method
-  private parseCurrentWeather(response: any): { temperature: number; windSpeed: number; humidity: number; condition: string } {
+  private parseCurrentWeather(response: any): {
+    temperature: number;
+    windSpeed: number;
+    humidity: number;
+    condition: string;
+  } {
+    if (!response.main || !response.wind || !response.weather || !response.weather[0]) {
+      throw new Error("Invalid weather data structure");
+    }
+
     const temperature = response.main.temp;
     const windSpeed = response.wind.speed;
     const humidity = response.main.humidity;
@@ -198,4 +211,4 @@ class WeatherService {
   }
 }
 
-export default new WeatherService ('DefaultCityName');
+export default new WeatherService ();

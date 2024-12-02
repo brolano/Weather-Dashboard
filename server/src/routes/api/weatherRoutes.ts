@@ -4,25 +4,25 @@ const router = Router();
 import HistoryService from '../../service/historyService.js';
 import WeatherService from '../../service/weatherService.js';
 
+
+
 // TODO: POST Request with city name to retrieve weather data
 router.post('/', async (req: Request, res: Response) => {
   try {
-      const { city } = req.body;
+      const { cityName } = req.body.cityName;
 
-      if (!city) {
+      if (!cityName) {
           return res.status(400).json({ error: 'City name is required' });
       }
   // TODO: GET weather data from city name
-  const weatherData = await WeatherService.getWeatherForCity(city);
+  const weatherData = await WeatherService.getWeatherForCity(cityName);
 
         if (!weatherData || weatherData.length === 0) {
             return res.status(404).json({ error: 'Weather data not found' });
         }
   // TODO: save city to search history
-  const savedCity = await HistoryService.addCity(city);
-
-        // Transform weather data for response
-        const formattedWeatherData = weatherData.map(weather => ({
+  const savedCity = await HistoryService.addCity(cityName);
+  const formattedWeatherData = weatherData.map(weather => ({
             coordinates: weather.getCoordinates(),
             temperature: weather.getTemperature(),
             windSpeed: weather.getWindSpeed(),

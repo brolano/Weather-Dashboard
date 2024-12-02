@@ -55,7 +55,6 @@ class HistoryService {
   async addCity(cityName: string): Promise<City> {
     const cities = await this.read();
     
-    // Generate new ID (simple increment - you might want a more robust ID generation)
     const maxId = cities.reduce((max, city) => Math.max(max, city.getId()), 0);
     const newCity = new City(cityName, maxId + 1);
     
