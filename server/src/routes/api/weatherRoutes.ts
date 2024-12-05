@@ -9,7 +9,7 @@ import WeatherService from '../../service/weatherService.js';
 // TODO: POST Request with city name to retrieve weather data
 router.post('/', async (req: Request, res: Response) => {
   try {
-      const { cityName } = req.body.cityName;
+      const { cityName } = req.body;
 
       if (!cityName) {
           return res.status(400).json({ error: 'City name is required' });

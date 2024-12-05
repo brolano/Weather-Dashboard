@@ -136,7 +136,6 @@ class WeatherService {
     }
 
     const data = await response.json();
-    console.log("Weather Data Response:", data); // Debugging
     return data;
   }
   // TODO: Build parseCurrentWeather method
