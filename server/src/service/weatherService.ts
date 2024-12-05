@@ -90,7 +90,7 @@ class WeatherService {
     }
 
     const data = await response.json();
-    console.log("Location Data Response:", data); // Debugging
+    // console.log("Location Data Response:", data); // Debugging
     return data;
   }
   // TODO: Create destructureLocationData method
@@ -111,9 +111,9 @@ class WeatherService {
     return `${this.baseURL}/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=${limit}&appid=${this.apiKey}`;
   }
   // TODO: Create buildWeatherQuery method
-  private buildWeatherQuery(coordinates: Coordinates): string {
+  private buildWeatherQuery(coordinates: Coordinates, current?: boolean): string {
     const { latitude, longitude } = coordinates;
-    return `${this.baseURL}/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${this.apiKey}`;
+    return `${this.baseURL}/data/2.5/${current ? "weather" : "forecast"}/?lat=${latitude}&lon=${longitude}&units=imperial&appid=${this.apiKey}`;
   }
   // TODO: Create fetchAndDestructureLocationData method
   private async fetchAndDestructureLocationData(city: string): Promise<Coordinates> {
@@ -127,6 +127,12 @@ class WeatherService {
   // TODO: Create fetchWeatherData method
   private async fetchWeatherData(coordinates: Coordinates): Promise<any> {
     const weatherQuery = this.buildWeatherQuery(coordinates);
+    console.log(weatherQuery);
+    
+    // const currentWeatherQuery = this.buildWeatherQuery(coordinates, true);
+    // const fiveDayWeatherQuery = this.buildWeatherQuery(coordinates);
+
+    console.log(weatherQuery);
     const response = await fetch(weatherQuery);
 
     if (!response.ok) {
@@ -146,6 +152,7 @@ class WeatherService {
     condition: string;
   } {
     if (!response.main || !response.wind || !response.weather || !response.weather[0]) {
+      console.log(response);
       throw new Error("Invalid weather data structure");
     }
 
