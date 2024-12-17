@@ -156,6 +156,12 @@ class WeatherService {
       throw new Error("Invalid weather data structure");
     }
 
+    for (const property in response.list) {
+      console.log(`${property}: ${response[property]}`);
+    }
+
+    
+
     const temperature = response.main.temp;
     const windSpeed = response.wind.speed;
     const humidity = response.main.humidity;
